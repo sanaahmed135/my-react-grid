@@ -3,7 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import ReactDataGrid from 'react-data-grid'
 import '../node_modules/bootstrap/dist/css/bootstrap.css'
-
+import { Editors, Formatters } from 'react-data-grid-addons'
+import update from 'immutability-helper';
 
 
 class App extends Component {
@@ -13,11 +14,13 @@ class App extends Component {
     this._columns = [
       {
         key: 'id',
-        name: 'ID'
+        name: 'ID',       
+        resizable:true
       },
       {
         key: 'title',
-        name: 'Title'
+        name: 'Title',
+        resizable:true
       },
       {
         key: 'priority',
@@ -28,26 +31,30 @@ class App extends Component {
       {
         key: 'issueType',
         name: 'Issue Type',
-        resizable:true
+        resizable:true,
+        editable: true
       },
       {
         key: 'complete',
         name: '% Complete',
-        resizable:true
+        resizable:true,
+        editable: true
       },
       {
         key: 'startDate',
         name: 'Start Date',
-        resizable:true
+        resizable:true,
+        editable: true
       },
       {
         key: 'completeDate',
-        name: 'Expected Complete',
-        resizable:true
+        name: 'Expected ',
+        resizable:true,
+        editable: true
       }
      ];
 
-    this.state = null;
+     this.state = { rows: this.createRows(1000) };
   }
 
   getRandomDate = (start, end) => {
@@ -55,6 +62,7 @@ class App extends Component {
   };
 
     createRows = () => {
+      
       let rows = [];
       for (let i = 1; i < 1000; i++) {
         rows.push({
@@ -69,20 +77,35 @@ class App extends Component {
         });
       }
   
-      this._rows = rows;
+      return rows;
     };
   
     rowGetter = (i) => {
-      return this._rows[i];
+      return this.state.rows[i];
     };
+  
+    handleGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+      let rows = this.state.rows.slice();
+  
+      for (let i = fromRow; i <= toRow; i++) {
+        let rowToUpdate = rows[i];
+        let updatedRow = update(rowToUpdate, {$merge: updated});
+        rows[i] = updatedRow;
+      }
+  
+      this.setState({ rows });
+    };
+  
 
   render() {
     return (
       <ReactDataGrid
-        columns={this._columns}
-        rowGetter={this.rowGetter}
-        rowsCount={this._rows.length}
-        minHeight={500} />);
+      enableCellSelect={true}
+      columns={this._columns}
+      rowGetter={this.rowGetter}
+      rowsCount={this.state.rows.length}
+      minHeight={500}
+      onGridRowsUpdated={this.handleGridRowsUpdated} />);
   }
 }
 
