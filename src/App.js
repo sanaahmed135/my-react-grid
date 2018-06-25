@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import ReactDataGrid from 'react-data-grid'
+import '../node_modules/bootstrap/dist/css/bootstrap.css'
 
 
 
@@ -15,14 +16,14 @@ class App extends Component {
         name: 'ID'
       },
       {
-        key: 'task',
-        name: 'Title',
-        resizable:true
+        key: 'title',
+        name: 'Title'
       },
       {
         key: 'priority',
         name: 'Priority',
-        resizable:true
+        resizable:true,
+        editable: true
       },
       {
         key: 'issueType',
