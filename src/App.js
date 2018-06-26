@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import ReactDataGrid,{Row} from 'react-data-grid'
 import '../node_modules/bootstrap/dist/css/bootstrap.css'
-import { Editors, Formatters,Selectors} from 'react-data-grid-addons'
+import { Editors, Formatters} from 'react-data-grid-addons'
 import update from 'immutability-helper';
 import PropTypes from 'prop-types';
 
+const { Toolbar, Filters: { NumericFilter, AutoCompleteFilter, MultiSelectFilter, SingleSelectFilter }, Data: { Selectors } } = require('react-data-grid-addons');
 const { AutoComplete: AutoCompleteEditor, DropDownEditor } = Editors;
 const { DropDownFormatter } = Formatters;
 
@@ -79,7 +79,9 @@ class App extends Component {
       {
         key: 'id',
         name: 'ID',       
-        locked:true
+        locked:true,
+        filterable: true,
+        filterRenderer: NumericFilter
       },
       {
         key: 'title',
@@ -96,6 +98,7 @@ class App extends Component {
         editor: PrioritiesEditor,
         editable: true,
         filterable: true,
+        filterRenderer: MultiSelectFilter,
         sortable: true
       },
       {
@@ -105,7 +108,16 @@ class App extends Component {
         editor: IssueTypesEditor,
         editable: true,
         filterable: true,
+        filterRenderer: SingleSelectFilter,
         sortable: true
+      },
+      {
+        key: 'developer',
+        name: 'Developer',
+        sortable:true,
+        editable: true,
+        filterable: true,
+        filterRenderer: AutoCompleteFilter
       },
       {
         key: 'complete',
@@ -114,6 +126,7 @@ class App extends Component {
         editable: true,
         formatter: PercentCompleteFormatter,
         filterable: true,
+        filterRenderer: NumericFilter,
         sortable: true
       },
       {
@@ -122,6 +135,7 @@ class App extends Component {
         resizable:true,
         editable: true,
         filterable: true,
+        filterRenderer: NumericFilter,
         sortable: true
       },
       {
@@ -130,6 +144,7 @@ class App extends Component {
         resizable:true,
         editable: true,
         filterable: true,
+        filterRenderer: NumericFilter,
         sortable: true
       }
      ];
@@ -152,6 +167,7 @@ class App extends Component {
           complete: Math.min(100, Math.round(Math.random() * 110)),
           priority: ['Critical', 'High', 'Medium', 'Low'][Math.floor((Math.random() * 3) + 1)],
           issueType: ['Bug', 'Improvement', 'Epic', 'Story'][Math.floor((Math.random() * 3) + 1)],
+          developer: ['James', 'Tim', 'Daniel', 'Alan'][Math.floor((Math.random() * 3) + 1)],
           startDate: this.getRandomDate(new Date(2015, 3, 1), new Date()),
           completeDate: this.getRandomDate(new Date(), new Date(2016, 0, 1))
 
@@ -230,6 +246,26 @@ class App extends Component {
       let rowIndexes = rows.map(r => r.rowIdx);
       this.setState({selectedIndexes: this.state.selectedIndexes.filter(i => rowIndexes.indexOf(i) === -1 )});
     };
+
+    handleFilterChange = (filter) => {
+      let newFilters = Object.assign({}, this.state.filters);
+      if (filter.filterTerm) {
+        newFilters[filter.column.key] = filter;
+      } else {
+        delete newFilters[filter.column.key];
+      }
+      this.setState({ filters: newFilters });
+    };
+    
+    getValidFilterValues = (columnId) => {
+      let values = this.state.rows.map(r => r[columnId]);
+      return values.filter((item, i, a) => { return i === a.indexOf(item); });
+    };
+  
+    handleOnClearFilters = () => {
+      this.setState({ filters: {} });
+    };
+  
   render() {
     return (
       <ReactDataGrid
@@ -251,7 +287,11 @@ class App extends Component {
         selectBy: {
           indexes: this.state.selectedIndexes
         }
-      }}  />);
+      }} 
+      toolbar={<Toolbar enableFilter={true}/>}
+      onAddFilter={this.handleFilterChange}
+      getValidFilterValues={this.getValidFilterValues}
+      onClearFilters={this.handleOnClearFilters} />);
 
   }
 }
