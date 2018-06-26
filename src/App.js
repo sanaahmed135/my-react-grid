@@ -45,43 +45,54 @@ class PercentCompleteFormatter extends Component {
 class App extends Component {
   constructor(props, context) {
     super(props, context);
-    this.createRows();
+    // this.createRows();
     this._columns = [
       {
         key: 'id',
         name: 'ID',       
-        resizable:true
+        locked:true
       },
       {
         key: 'title',
         name: 'Title',
-        resizable:true
+        editable: true,
+        resizable:true,
+        filterable: true,
+        sortable: true
       },
       {
         key: 'priority',
         name: 'Priority',
         resizable:true,
         editor: PrioritiesEditor,
-        editable: true
+        editable: true,
+        filterable: true,
+        sortable: true
       },
       {
         key: 'issueType',
         name: 'Issue Type',
         resizable:true,
         editor: IssueTypesEditor,
-        editable: true
+        editable: true,
+        filterable: true,
+        sortable: true
       },
       {
         key: 'complete',
         name: '% Complete',
         resizable:true,
-        formatter: PercentCompleteFormatter
+        editable: true,
+        formatter: PercentCompleteFormatter,
+        filterable: true,
+        sortable: true
       },
       {
         key: 'startDate',
         name: 'Start Date',
         resizable:true,
         editable: true,
+        filterable: true,
         sortable: true
       },
       {
@@ -89,12 +100,13 @@ class App extends Component {
         name: 'Expected ',
         resizable:true,
         editable: true,
+        filterable: true,
         sortable: true
       }
      ];
-     let originalRows = this.createRows(1000);
-     let rows = originalRows.slice(0);
-     this.state = { rows: this.createRows(2000) };
+      let originalRows = this.createRows(1000);
+      let rows = originalRows.slice(0);
+     this.state = { rows: this.createRows(1000) , filters: {}, sortColumn: null, sortDirection: null };
   }
 
   getRandomDate = (start, end) => {
@@ -160,6 +172,7 @@ class App extends Component {
       minHeight={500}
       onGridRowsUpdated={this.handleGridRowsUpdated}
       onGridSort={this.handleGridSort} />);
+
   }
 }
 
