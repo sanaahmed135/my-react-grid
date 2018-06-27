@@ -100,6 +100,7 @@ class App extends Component {
         name: 'Priority',
         filterable: true,
         filterRenderer: MultiSelectFilter,
+        editor:PrioritiesEditor,
         sortable: true,
         editable: true
       },
@@ -109,7 +110,8 @@ class App extends Component {
         filterable: true,
         filterRenderer: SingleSelectFilter,
         sortable: true,
-        editable: true
+        editable: true,
+        editor: IssueTypesEditor
       },
       {
         key: 'developer',
