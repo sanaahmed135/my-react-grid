@@ -234,7 +234,7 @@ class App extends Component {
   //to display selected cell number
   onCellDeSelected = ({ rowIdx, idx }) => {
     if (idx === 2) {
-      alert('the editor for cell (' + rowIdx + ',' + idx + ') should have just closed');
+      // alert('the editor for cell (' + rowIdx + ',' + idx + ') should have just closed');
     }
   };
 
@@ -270,11 +270,23 @@ class App extends Component {
     this.setState({ filters: {} });
   };
 
+  handleRemoveSpecificRow = (idx) => () => {
+    const rows = [...this.state.rows]
+    rows.splice(idx, 1)
+    this.setState({ rows })
+  }
   render() {
     const rowText = this.state.selectedRows.length === 1 ? 'row' : 'rows';
+
     return  (
       <div>
       <span>{this.state.selectedRows.length} {rowText} selected</span>
+      <button
+    className="btn btn-outline-danger btn-sm"
+    onClick={this.handleRemoveSpecificRow(this.rowIdx)}
+  >
+    Remove
+  </button>
       <ReactDataGrid
         ref={ node => this.grid = node }
         enableCellSelect={true}
@@ -287,6 +299,7 @@ class App extends Component {
         onRowSelect={this.onRowSelect}
         onCellSelected={this.onCellSelected}
         onCellDeSelected={this.onCellDeSelected}
+        handleRemoveSpecificRow={this.handleRemoveSpecificRow}
         rowSelection={{
           showCheckbox: true,
           enableShiftSelect: true,
