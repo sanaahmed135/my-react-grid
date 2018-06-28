@@ -270,23 +270,29 @@ class App extends Component {
     this.setState({ filters: {} });
   };
 
+  //works for multiple cell deletion
   handleRemoveSpecificRow = (idx) => () => {
     const rows = [...this.state.rows]
-    rows.splice(idx, 1)
+    rows.splice(idx,1)
     this.setState({ rows })
-  }
-  render() {
-    const rowText = this.state.selectedRows.length === 1 ? 'row' : 'rows';
+  };
 
+  handleRemoveRow = () => {
+    this.setState({
+      rows: this.state.rows.slice(0, -1)
+    });
+  };
+
+  render() {
+    const rowText = this.state.selectedIndexes.length === 1 ? 'row' : 'rows';
     return  (
-      <div>
-      <span>{this.state.selectedRows.length} {rowText} selected</span>
-      <button
-    className="btn btn-outline-danger btn-sm"
-    onClick={this.handleRemoveSpecificRow(this.rowIdx)}
-  >
-    Remove
-  </button>
+        <div>
+        <span>{this.state.selectedIndexes.length } {rowText} selected</span>
+        <button
+        className="btn btn-outline-danger btn-sm"
+        onClick={this.handleRemoveSpecificRow(this.state.selectedIndexes)}>
+        Remove
+        </button>
       <ReactDataGrid
         ref={ node => this.grid = node }
         enableCellSelect={true}
@@ -315,10 +321,10 @@ class App extends Component {
         onAddFilter={this.handleFilterChange}
         onGridRowsUpdated={this.handleGridRowsUpdated}
         getValidFilterValues={this.getValidFilterValues}
-        onClearFilters={this.handleOnClearFilters} />
+        onClearFilters={this.handleOnClearFilters} 
+        />
         </div>);
   }
 }
-
 
 export default App;
